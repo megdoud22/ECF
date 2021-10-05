@@ -1,0 +1,128 @@
+   De quel genre d’entreprises est tirée cette base de données ? Fournissez le dictionnaire de données des tables offices et  customers.
+   ENTREPRISE COMMERCIALE,
+
+
+   3.1 Interrogations - Requêtes
+       Combien y-a-t-il d'enregistrements dans les tables customers, employees, offices, orders, payments et products ?
+   
+    
+    SELECT COUNT(customerNumber) FROM customers;
+    FOR customers = 122 LIGNES
+
+    SELECT COUNT(employeeNumber) FROM employees;
+    FOR employees = 23 LIGNES
+
+    SELECT COUNT(officeCode) FROM offices;
+    FOR OFFICES = 7 LIGNES
+    
+    SELECT COUNT(orderNumber) FROM orders;
+    FOR ORDERS = 64 LIGNES
+    
+    SELECT COUNT(customerNumber) FROM payments;
+    FOR PAYMENTS = 273 LIGNES
+
+    SELECT COUNT(productCode) FROM products;
+    FOR PRODUCTS = 110 LIGNES
+
+
+    ⦁	Lister par quantité (quantityInStock) décroissante les productName de la table des produits (products) contenant "Harley".
+
+    
+     SELECT productName, quantityInStock
+     FROM products WHERE productName LIKE "%Harley%"
+     ORDER BY quantityInStock DESC;
+
+    ⦁	Lister par le prénom en ordre croissant dans la table des clients (customers) les clients dont le prénom a un a en deuxième position.
+
+
+     SELECT customerName FROM customers
+     WHERE customerName LIKE "_a%"
+     ORDER BY customerName ASC;
+
+     ⦁	Combien y en a-t-il ? 
+      SELECT COUNT(customerName) FROM customers
+      WHERE customerName LIKE "_a%";
+      il ya 20
+
+     ⦁	Dans la table products dont nous voulons n'afficher que productName et
+        buyPrice sous les dénominations respectives de "Les articles" et "Les prix"
+        ; lister les articles dont les prix sont compris entre 50 et 65.
+
+      SELECT productName AS "les articles", buyPrice AS "les prix"
+      FROM products
+      WHERE buyPrice BETWEEN 50 AND 60;
+      
+     ⦁	Afficher la somme, que vous nommerez "Total [07/2004]",  de tous les paiements effectués dans la table payments depuis le 1 juillet 2004.
+
+      SELECT paymentDate, SUM(amount) AS "Total [07/2004]"
+      FROM payments
+      WHERE paymentDate >= "2004-7-1"
+      GROUP BY paymentDate;
+
+
+     ⦁	Sélectionner dans les détails de commande (orderDetails), les commandes dont la quantité est supérieure ou égale à 50 que l'on veut grouper par numéro d'ordre.
+      
+     SELECT orderNumber, SUM(quantityOrdered)
+     FROM orderdetails 
+     GROUP BY orderNumber
+     HAVING SUM(quantityOrdered) >= 50;
+
+     ⦁	Sélectionner les clients (customerName) qui n'ont pas encore passé commande et trier par ordre alphabétique ascendant.
+
+     SELECT customers.customerNumber, customerName, orders.customerNumber 
+     FROM customers LEFT JOIN orders ON customers.customerNumber = orders.customerNumber 
+     WHERE orders.customerNumber IS NULL
+     ORDER BY customerName ASC;
+
+     ⦁	Combien d'employés (Nom, prenom, employeeNumber, jobTitle) ne sont rattachés à aucun bureau (officeCode) ?
+     
+     SELECT lastName AS Nom, firstName AS Prénom, employeeNumber, jobTitle, employees.officeCode
+     FROM employees
+     RIGHT JOIN offices ON employees.officeCode = offices.officeCode
+     WHERE offices.officeCode IS NULL;
+       
+     ⦁	Combien y-a-t-il de villes différentes dans la table customers ?
+
+     SELECT COUNT(DISTINCT city) AS "ville"
+     FROM customers;
+     95 
+
+     ⦁	Quel est le nom et le numéro du client qui a payé le plus dans la table payments. On souhaite avoir la somme totale réellement payée pour chaque client dont on ne veut que le nom (pas le numéro).
+   
+     SELECT customers.customerNumber, customerName, SUM(amount), 
+     FROM customers 
+     INNER JOIN payments ON customers.customerNumber = payments.customerNumber 
+     GROUP BY customerName
+     ORDER BY SUM(amount) DESC;
+
+     ⦁	Dans la table des produits (products), nous voulons la quantité commandée, qui se trouve dans les détails des ordres (orderDetails), totale, et la somme des ventes, depuis le 01/01/2005, classées par ligne de produit (productLine).
+ 
+    SELECT products.productCode, productName, productLine, SUM(quantityOrdered)
+    FROM products
+    INNER JOIN orderdetails ON products.productCode = orderdetails.productCode
+    GROUP BY productCode
+    ORDER BY productLine;
+
+
+   ⦁	Afficher les identifiants, les dates et statuts des commandes, le nom du client ayant passé commande, ainsi que le nom, le code et la quantité d'articles commandé.
+   
+   SELECT orders.orderNumber, orders.orderDate, orders.status 
+   FROM orders 
+   INNER JOIN orders ON payments.customerNumber = orders.customerNumber;
+
+
+
+
+
+  ⦁	À partir des tables customers, employees, offices, orders, orderDetails, products afficher le nom du client, la ville et le pays du bureau, le prénom, le nom et le poste occupé par l'employé, les articles commandés, leur quantité, la ligne de produit et le prix d'achat.
+
+
+  SELECT customerName, offices.city, offices.country, lastName, firstName, jobTitle, quantityOrdered, orderdetails.productCode, buyPrice, productline
+  FROM customers, offices, employees, orderdetails, products; 
+
+
+       
+
+    
+    
+
